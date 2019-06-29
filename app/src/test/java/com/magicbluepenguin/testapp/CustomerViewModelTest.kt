@@ -2,7 +2,7 @@ package com.magicbluepenguin.testapp
 
 import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.customerrepository.CsvCustomerRepository
-import com.magicbluepenguin.testapp.viewmodel.CustomersViewModel
+import com.magicbluepenguin.testapp.customerlistactivity.CustomersViewModel
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking

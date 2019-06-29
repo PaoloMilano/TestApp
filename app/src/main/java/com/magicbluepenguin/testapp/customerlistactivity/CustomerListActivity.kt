@@ -13,7 +13,6 @@ import com.magicbluepenguin.testapp.bindings.BoundPagedRecyclerViewAdapter
 import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.databinding.ActivityCustomerListBinding
 import com.magicbluepenguin.testapp.databinding.CustomerListItemBinding
-import com.magicbluepenguin.testapp.viewmodel.CustomersViewModel
 import kotlinx.android.synthetic.main.activity_customer_list.toolbar
 
 class CustomerListActivity : BaseActivity() {

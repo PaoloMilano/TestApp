@@ -2,8 +2,8 @@ package com.magicbluepenguin.testapp.dagger
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.magicbluepenguin.testapp.viewmodel.CustomersViewModel
-import com.magicbluepenguin.testapp.viewmodel.ViewModelFactory
+import com.magicbluepenguin.testapp.customerlistactivity.CustomersViewModel
+import com.magicbluepenguin.testapp.base.ViewModelFactory
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module

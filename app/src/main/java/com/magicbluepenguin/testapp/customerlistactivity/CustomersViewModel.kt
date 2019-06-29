@@ -1,4 +1,4 @@
-package com.magicbluepenguin.testapp.viewmodel
+package com.magicbluepenguin.testapp.customerlistactivity
 
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField

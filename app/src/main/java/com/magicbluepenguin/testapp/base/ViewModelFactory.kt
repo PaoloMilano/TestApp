@@ -1,4 +1,4 @@
-package com.magicbluepenguin.testapp.viewmodel
+package com.magicbluepenguin.testapp.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
