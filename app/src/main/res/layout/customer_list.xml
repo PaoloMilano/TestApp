@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="customersViewModel"
+            type="com.magicbluepenguin.testapp.viewmodel.CustomersViewModel" />
+    </data>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pull_to_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:onRefreshListener="@{() -> customersViewModel.refreshResults()}"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:refreshing="@{ customersViewModel.isLoading }">
+
+        <com.magicbluepenguin.testapp.bindings.BoundRecyclerView
+            android:id="@+id/customer_list_view"
+            android:name="com.magicbluepenguin.raboapp.ItemListFragment"
+            items="@{ customersViewModel.customersLiveList }"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:scrollbars="vertical"
+            app:layoutManager="LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".customerlistactivity.CustomerListActivity"
+            tools:listitem="@layout/customer_list_item" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

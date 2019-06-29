@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RaboApp</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="date_of_birth_header">Date of Birth:</string>
+    <string name="issue_count_header">Issue count:</string>
+    <string name="no_resources_snackbar">No resources were provided</string>
+</resources>
