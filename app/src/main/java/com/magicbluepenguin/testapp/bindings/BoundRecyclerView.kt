@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Generic RecyclerView that uses to enable reuse with data bindings
  */
-class BoundRecyclerView<T>(context: Context, attrs: AttributeSet, defStyle: Int) : RecyclerView(context, attrs) {
+class BoundRecyclerView<T>(context: Context, attrs: AttributeSet) : RecyclerView(context, attrs) {
 
     var boundAdapter: BoundPagedRecyclerViewAdapter<T, *>?
         set(value) {
@@ -17,13 +17,13 @@ class BoundRecyclerView<T>(context: Context, attrs: AttributeSet, defStyle: Int)
             }
         }
 
+        @Suppress("UNCHECKED_CAST")
         get() {
             if (adapter is BoundPagedRecyclerViewAdapter<*, *>) {
-                return adapter as? BoundPagedRecyclerViewAdapter<T, *>?
+                return adapter as? BoundPagedRecyclerViewAdapter<T, *>
             }
             return null
         }
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 }
 
 /**
