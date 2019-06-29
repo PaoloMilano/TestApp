@@ -6,7 +6,6 @@ import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
-
 @Singleton
 @Component(modules = [ViewModelModule::class, CsvCustomerDataFetcherModule::class, CsvCustomerRepositoryModule::class])
 interface AppComponent {

@@ -12,34 +12,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class CustomersViewModel @Inject constructor(val customerRepository: CustomerRepository<String>) : ViewModel(), CoroutineScope {
+class CustomersViewModel @Inject constructor(val customerRepository: CustomerRepository<String>) : ViewModel(),
+    CoroutineScope {
 
     val customersLiveList = ObservableField<List<Customer>>()
     val isLoading = ObservableBoolean()
     val noResourcesProvided = ObservableBoolean()
 
-    var previousQuery: String? = null
+    var previousResource: String? = null
 
     private val job = Job()
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
-    fun fetchAndUpdateResults(fromSource: String? = previousQuery) {
+    fun fetchAndUpdateResults(fromSource: String? = previousResource) = launch(Dispatchers.Default) {
         isLoading.set(true)
-        if(fromSource == null){
+        if (fromSource == null) {
             noResourcesProvided.set(true)
             isLoading.set(false)
-        }else {
-            launch(Dispatchers.Default) {
-                customersLiveList.set(customerRepository.getCustomers(fromSource))
-                isLoading.set(false)
-            }
+        } else {
+            previousResource = fromSource
+            customersLiveList.set(customerRepository.getCustomers(fromSource))
+            isLoading.set(false)
         }
         noResourcesProvided.set(false)
     }
 
-    fun refreshResults(){
+    fun refreshResults() = launch(Dispatchers.Default) {
         fetchAndUpdateResults()
     }
 }

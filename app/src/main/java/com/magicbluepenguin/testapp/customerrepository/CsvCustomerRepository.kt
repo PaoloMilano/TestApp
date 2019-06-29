@@ -5,6 +5,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CsvCustomerRepository @Inject constructor(val customerDataFetcher: CustomerDataFetcher<String>) : CustomerRepository <String>{
-    override fun getCustomers(fromSource: String?)= customerDataFetcher.fetchAndParseCustomers(fromSource)
+class CsvCustomerRepository @Inject constructor(val customerDataFetcher: CustomerDataFetcher<String>) : CustomerRepository <String> {
+    override fun getCustomers(fromSource: String?) = customerDataFetcher.fetchAndParseCustomers(fromSource)
 }

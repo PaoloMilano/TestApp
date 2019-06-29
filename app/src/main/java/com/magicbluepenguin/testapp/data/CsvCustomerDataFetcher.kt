@@ -19,12 +19,12 @@ class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager)
     private val DATE_OF_BIRTH_KEY = "Date of birth"
 
     @SuppressLint("SimpleDateFormat")
-    private val dateParseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private val dateParseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     @SuppressLint("SimpleDateFormat")
     private val stringParseFormat = SimpleDateFormat("dd-MMM-yyyy")
 
     override fun fetchAndParseCustomers(fromSource: String?): List<Customer> {
-        if(fromSource == null){
+        if (fromSource == null) {
             return emptyList()
         }
 

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Generic RecyclerView that uses to enable reuse with data bindings
  */
-class BoundRecyclerView<T>(context:Context, attrs: AttributeSet, defStyle: Int) : RecyclerView(context, attrs) {
+class BoundRecyclerView<T>(context: Context, attrs: AttributeSet, defStyle: Int) : RecyclerView(context, attrs) {
 
     var boundAdapter: BoundPagedRecyclerViewAdapter<T, *>?
         set(value) {
@@ -18,14 +18,13 @@ class BoundRecyclerView<T>(context:Context, attrs: AttributeSet, defStyle: Int) 
         }
 
         get() {
-            if (adapter is BoundPagedRecyclerViewAdapter<*, *>){
+            if (adapter is BoundPagedRecyclerViewAdapter<*, *>) {
                 return adapter as? BoundPagedRecyclerViewAdapter<T, *>?
             }
             return null
         }
-    constructor(context:Context, attrs: AttributeSet) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 }
-
 
 /**
  * Custom Adapter that uses generics to enable reuse with data bindings. This adapter is low on functionality, limiting
@@ -68,4 +67,3 @@ abstract class BindableViewHolder<T, I : ViewDataBinding>(private val viewBindin
 
     abstract fun bind(viewBinding: I, item: T)
 }
-
