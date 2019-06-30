@@ -1,24 +1,18 @@
 package com.magicbluepenguin.testapp.data
 
 /**
- * This class handles basic error response in a way that can be easily interpreted for the end user.
+ * This enum handles basic error response in a way that can be easily interpreted for the end client.
  * It includes 3 scenarios:
  *
- * [ResponseErrorAll] An error was encountered that prevented any data from being fetched
- * [ResponseErrorSome] The data was fetched but some of it may have been corrupted
- * [ResponseErrorNone] No error, all data was fetched successfully
+ * [ALL] An error was encountered that prevented any data from being fetched
+ * [SOME] The data was fetched but some of it may have been corrupted
+ * [NONE] No error, all data was fetched successfully
  *
- * We can further make the distinction between classes that return a value (some, none) and those that don't (all)
- * by checking if they implement [ResponseWithValue]
  */
-sealed class DataResponse<T>
+enum class DataFetchError { NONE, SOME, ALL }
 
-class ResponseErrorAll<T> : DataResponse<T>()
+sealed class DataResponse<T>(val error: DataFetchError)
 
-interface ResponseWithValue<T> {
-    val data: T
-}
+class ResponseNoValue<T>() : DataResponse<T>(DataFetchError.ALL)
 
-class ResponseErrorSome<T>(override val data: T) : ResponseWithValue<T>, DataResponse<T>()
-
-class ResponseErrorNone<T>(override val data: T) : ResponseWithValue<T>, DataResponse<T>()
+class ResponseWithValue<T>(val data: T, error: DataFetchError) : DataResponse<T>(error)

@@ -5,18 +5,16 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.customerrepository.CustomerRepository
+import com.magicbluepenguin.testapp.data.DataFetchError
 import com.magicbluepenguin.testapp.data.DataResponse
-import com.magicbluepenguin.testapp.data.ResponseErrorAll
-import com.magicbluepenguin.testapp.data.ResponseErrorNone
-import com.magicbluepenguin.testapp.data.ResponseErrorSome
+import com.magicbluepenguin.testapp.data.ResponseNoValue
+import com.magicbluepenguin.testapp.data.ResponseWithValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
-
-enum class DataFetchError { NONE, SOME, ALL }
 
 class CustomersViewModel @Inject constructor(val customerRepository: CustomerRepository<String>) : ViewModel(),
     CoroutineScope {
@@ -56,16 +54,13 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
     }
 
     private fun handleCustomersResponseAndGetData(dataResponse: DataResponse<List<Customer>>): List<Customer> {
+        dataFetchError.set(dataResponse.error)
+        dataFetchError.set(DataFetchError.NONE)
         return when (dataResponse) {
-            is ResponseErrorNone -> dataResponse.data
-            is ResponseErrorSome -> {
-                dataFetchError.set(DataFetchError.SOME)
-                dataFetchError.set(DataFetchError.NONE)
+            is ResponseWithValue -> {
                 dataResponse.data
             }
-            is ResponseErrorAll -> {
-                dataFetchError.set(DataFetchError.ALL)
-                dataFetchError.set(DataFetchError.NONE)
+            is ResponseNoValue -> {
                 emptyList()
             }
         }

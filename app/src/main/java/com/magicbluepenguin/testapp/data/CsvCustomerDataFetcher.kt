@@ -26,7 +26,7 @@ class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager)
     @Suppress("UNCHECKED_CAST")
     override fun fetchAndParseCustomers(fromSource: String?): DataResponse<List<Customer>> {
         if (fromSource == null) {
-            return ResponseErrorNone(emptyList())
+            return ResponseWithValue(emptyList(), DataFetchError.NONE)
         }
 
         return try {
@@ -36,59 +36,48 @@ class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager)
             with(CSVReaderHeaderAware(InputStreamReader(stream) as Reader?)) {
                 val customerDataList = mutableListOf<Customer>()
                 var customerData: Map<String, String>? = readMap()
-                var hasError = false
+                var error = DataFetchError.NONE
                 while (customerData != null) {
                     (parseCustomer(customerData) as? ResponseWithValue<Customer>)?.let {
-                        if (it is ResponseErrorSome) {
-                            hasError = true
+                        if (it.error != DataFetchError.NONE) {
+                            error = DataFetchError.SOME
                         }
 
                         customerDataList.add(it.data)
                     }
                     customerData = readMap()
                 }
-
-                return if (hasError) {
-                    ResponseErrorSome(customerDataList)
-                } else {
-                    ResponseErrorNone(customerDataList)
-                }
+                return ResponseWithValue(customerDataList, error)
             }
         } catch (e: FileNotFoundException) {
-            ResponseErrorAll()
+            ResponseNoValue()
         }
     }
 
     private fun parseCustomer(customerData: Map<String, String>): DataResponse<Customer> {
 
-        var hasError = false
+        var error = DataFetchError.NONE
         val date = try {
             stringParseFormat.format(dateParseFormat.parse(customerData[DATE_OF_BIRTH_KEY]))
         } catch (e: ParseException) {
-            hasError = true
+            error = DataFetchError.SOME
             null
         }
 
         val issueCount = try {
             customerData[ISSUE_COUNT_KEY]?.toInt()
         } catch (e: NumberFormatException) {
-            hasError = true
+            error = DataFetchError.SOME
             null
         }
 
-        return with(
+        return ResponseWithValue(
             Customer(
                 customerData[FIST_NAME_KEY],
                 customerData[SUR_NAME_KEY],
                 date,
                 issueCount
-            )
-        ) {
-            if (hasError) {
-                ResponseErrorSome(this)
-            } else {
-                ResponseErrorNone(this)
-            }
-        }
+            ), error
+        )
     }
 }
