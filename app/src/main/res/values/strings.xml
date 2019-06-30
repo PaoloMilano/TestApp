@@ -4,4 +4,6 @@
     <string name="date_of_birth_header">Date of Birth:</string>
     <string name="issue_count_header">Issue count:</string>
     <string name="no_resources_snackbar">No resources were provided</string>
+    <string name="records_corrupted">Some of the data may have beed corrupted</string>
+    <string name="no_records_found">The data is not accessible</string>
 </resources>

@@ -1,12 +1,14 @@
 package com.magicbluepenguin.testapp.data
 
-import android.annotation.SuppressLint
 import android.content.res.AssetManager
 import com.magicbluepenguin.testapp.customer.Customer
 import com.opencsv.CSVReaderHeaderAware
+import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.io.Reader
+import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,33 +20,75 @@ class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager)
     private val ISSUE_COUNT_KEY = "Issue count"
     private val DATE_OF_BIRTH_KEY = "Date of birth"
 
-    @SuppressLint("SimpleDateFormat")
-    private val dateParseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    @SuppressLint("SimpleDateFormat")
-    private val stringParseFormat = SimpleDateFormat("dd-MMM-yyyy")
+    private val dateParseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    private val stringParseFormat = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
 
-    override fun fetchAndParseCustomers(fromSource: String?): List<Customer> {
+    @Suppress("UNCHECKED_CAST")
+    override fun fetchAndParseCustomers(fromSource: String?): DataResponse<List<Customer>> {
         if (fromSource == null) {
-            return emptyList()
+            return ResponseErrorNone(emptyList())
         }
 
-        val stream = assetManager.open(fromSource)
+        return try {
 
-        with(CSVReaderHeaderAware(InputStreamReader(stream) as Reader?)) {
-            val customerDataList = mutableListOf<Customer>()
-            var customerData: Map<String, String>? = readMap()
-            while (customerData != null) {
-                customerDataList.add(
-                    Customer(
-                        customerData[FIST_NAME_KEY],
-                        customerData[SUR_NAME_KEY],
-                        stringParseFormat.format(dateParseFormat.parse(customerData[DATE_OF_BIRTH_KEY])),
-                        customerData[ISSUE_COUNT_KEY]?.toInt()
-                    )
-                )
-                customerData = readMap()
+            val stream = assetManager.open(fromSource)
+
+            with(CSVReaderHeaderAware(InputStreamReader(stream) as Reader?)) {
+                val customerDataList = mutableListOf<Customer>()
+                var customerData: Map<String, String>? = readMap()
+                var hasError = false
+                while (customerData != null) {
+                    (parseCustomer(customerData) as? ResponseWithValue<Customer>)?.let {
+                        if (it is ResponseErrorSome) {
+                            hasError = true
+                        }
+
+                        customerDataList.add(it.data)
+                    }
+                    customerData = readMap()
+                }
+
+                return if (hasError) {
+                    ResponseErrorSome(customerDataList)
+                } else {
+                    ResponseErrorNone(customerDataList)
+                }
             }
-            return customerDataList
+        } catch (e: FileNotFoundException) {
+            ResponseErrorAll()
+        }
+    }
+
+    private fun parseCustomer(customerData: Map<String, String>): DataResponse<Customer> {
+
+        var hasError = false
+        val date = try {
+            stringParseFormat.format(dateParseFormat.parse(customerData[DATE_OF_BIRTH_KEY]))
+        } catch (e: ParseException) {
+            hasError = true
+            null
+        }
+
+        val issueCount = try {
+            customerData[ISSUE_COUNT_KEY]?.toInt()
+        } catch (e: NumberFormatException) {
+            hasError = true
+            null
+        }
+
+        return with(
+            Customer(
+                customerData[FIST_NAME_KEY],
+                customerData[SUR_NAME_KEY],
+                date,
+                issueCount
+            )
+        ) {
+            if (hasError) {
+                ResponseErrorSome(this)
+            } else {
+                ResponseErrorNone(this)
+            }
         }
     }
 }

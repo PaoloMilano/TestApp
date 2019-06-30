@@ -3,7 +3,11 @@ package com.magicbluepenguin.testapp
 import androidx.databinding.Observable
 import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.customerlistactivity.CustomersViewModel
+import com.magicbluepenguin.testapp.customerlistactivity.DataFetchError
 import com.magicbluepenguin.testapp.customerrepository.CsvCustomerRepository
+import com.magicbluepenguin.testapp.data.ResponseErrorAll
+import com.magicbluepenguin.testapp.data.ResponseErrorNone
+import com.magicbluepenguin.testapp.data.ResponseErrorSome
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -22,7 +26,7 @@ class CustomerViewModelTest {
         )
 
         val mockRepository = mockk<CsvCustomerRepository>()
-        every { mockRepository.getCustomers(any()) } answers { testListOfCustomers }
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorNone(testListOfCustomers) }
 
         val customersViewModel = CustomersViewModel(mockRepository)
 
@@ -36,7 +40,7 @@ class CustomerViewModelTest {
     @Test
     fun `assert that no-resource observable is updated correctly when a resource is provided`() {
         val mockRepository = mockk<CsvCustomerRepository>()
-        every { mockRepository.getCustomers(any()) } answers { emptyList() }
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorNone(emptyList()) }
 
         val customersViewModel = CustomersViewModel(mockRepository)
         // We expect this to be set to false, so we need to start from true in order to observe the call
@@ -76,7 +80,7 @@ class CustomerViewModelTest {
     fun `assert that loading observable is updated correctly when a resource is provided`() {
 
         val mockRepository = mockk<CsvCustomerRepository>()
-        every { mockRepository.getCustomers(any()) } answers { emptyList() }
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorNone(emptyList()) }
 
         val customersViewModel = CustomersViewModel(mockRepository)
 
@@ -113,7 +117,7 @@ class CustomerViewModelTest {
 
         val resourceName = "fake_res_name"
         val mockRepository = mockk<CsvCustomerRepository>()
-        every { mockRepository.getCustomers(any()) } answers { emptyList() }
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorNone(emptyList()) }
 
         val customersViewModel = CustomersViewModel(mockRepository)
 
@@ -122,7 +126,53 @@ class CustomerViewModelTest {
             customersViewModel.refreshResults().join()
         }
         verify(exactly = 2) {
-            mockRepository.getCustomers(resourceName)
+            mockRepository.getCustomersResponse(resourceName)
         }
+    }
+
+    @Test
+    fun `assert that error level is initialised to NONE`() {
+        val customersViewModel = CustomersViewModel(mockk())
+        assertEquals(DataFetchError.NONE, customersViewModel.dataFetchError.get())
+    }
+
+    @Test
+    fun `assert that error level SOME is set to correctly`() {
+        val mockRepository = mockk<CsvCustomerRepository>()
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorSome(emptyList()) }
+
+        val customersViewModel = CustomersViewModel(mockRepository)
+        val actualCalls = mutableListOf<DataFetchError?>()
+        customersViewModel.dataFetchError.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                actualCalls.add(customersViewModel.dataFetchError.get())
+            }
+        })
+
+        runBlocking {
+            // Pass an empty string as a fake resource name
+            customersViewModel.fetchAndUpdateResults("").join()
+        }
+        assertEquals(listOf(DataFetchError.SOME, DataFetchError.NONE), actualCalls)
+    }
+
+    @Test
+    fun `assert that error level ALL is set to correctly`() {
+        val mockRepository = mockk<CsvCustomerRepository>()
+        every { mockRepository.getCustomersResponse(any()) } answers { ResponseErrorAll() }
+
+        val customersViewModel = CustomersViewModel(mockRepository)
+        val actualCalls = mutableListOf<DataFetchError?>()
+        customersViewModel.dataFetchError.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                actualCalls.add(customersViewModel.dataFetchError.get())
+            }
+        })
+
+        runBlocking {
+            // Pass an empty string as a fake resource name
+            customersViewModel.fetchAndUpdateResults("").join()
+        }
+        assertEquals(listOf(DataFetchError.ALL, DataFetchError.NONE), actualCalls)
     }
 }
