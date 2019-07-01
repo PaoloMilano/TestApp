@@ -1,10 +1,8 @@
-package com.magicbluepenguin.testapp
+package com.magicbluepenguin.testapp.data
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.magicbluepenguin.testapp.customer.Customer
-import com.magicbluepenguin.testapp.data.CsvCustomerDataFetcher
-import com.magicbluepenguin.testapp.data.ResponseNoValue
-import com.magicbluepenguin.testapp.data.ResponseWithValue
+import com.magicbluepenguin.testapp.data.customer.Customer
+import com.magicbluepenguin.testapp.data.customerfetcher.CsvCustomerDataFetcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,7 +13,8 @@ class CsvCustomerDataFetcherTest {
     @Test
     fun parseFileNoErrors() {
         // Assert that a file with no errors can be parsed correctly
-        val tested = CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
+        val tested =
+            CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
         val response = tested.fetchAndParseCustomers("issues_no_error.csv")
         assertTrue(response is ResponseWithValue)
         val data = (response as ResponseWithValue<List<Customer>>).data
@@ -26,7 +25,8 @@ class CsvCustomerDataFetcherTest {
     @Test
     fun parseFileSomeErrors() {
         // Assert parsing errors are correctly propagated to client
-        val tested = CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
+        val tested =
+            CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
         val response = tested.fetchAndParseCustomers("issues_some_error.csv")
         assertTrue(response is ResponseWithValue)
         val data = (response as ResponseWithValue<List<Customer>>).data
@@ -37,7 +37,8 @@ class CsvCustomerDataFetcherTest {
     @Test
     fun parseFileAllErrors() {
         // Assert that when a file can't be accessed the error is correctly propagated to the client
-        val tested = CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
+        val tested =
+            CsvCustomerDataFetcher(InstrumentationRegistry.getInstrumentation().context.assets)
         val response = tested.fetchAndParseCustomers("inexistent_file")
         assertTrue(response is ResponseNoValue)
     }

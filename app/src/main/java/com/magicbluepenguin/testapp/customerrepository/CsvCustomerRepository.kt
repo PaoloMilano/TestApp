@@ -1,6 +1,6 @@
 package com.magicbluepenguin.testapp.customerrepository
 
-import com.magicbluepenguin.testapp.data.CustomerDataFetcher
+import com.magicbluepenguin.testapp.data.customerfetcher.CustomerDataFetcher
 import javax.inject.Inject
 import javax.inject.Singleton
 

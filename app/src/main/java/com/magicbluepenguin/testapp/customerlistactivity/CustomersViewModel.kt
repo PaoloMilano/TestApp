@@ -3,12 +3,12 @@ package com.magicbluepenguin.testapp.customerlistactivity
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
-import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.customerrepository.CustomerRepository
 import com.magicbluepenguin.testapp.data.DataFetchError
 import com.magicbluepenguin.testapp.data.DataResponse
 import com.magicbluepenguin.testapp.data.ResponseNoValue
 import com.magicbluepenguin.testapp.data.ResponseWithValue
+import com.magicbluepenguin.testapp.data.customer.Customer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

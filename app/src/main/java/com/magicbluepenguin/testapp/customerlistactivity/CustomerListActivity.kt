@@ -13,8 +13,8 @@ import com.magicbluepenguin.testapp.R
 import com.magicbluepenguin.testapp.base.BaseActivity
 import com.magicbluepenguin.testapp.bindings.BindableViewHolder
 import com.magicbluepenguin.testapp.bindings.BoundPagedRecyclerViewAdapter
-import com.magicbluepenguin.testapp.customer.Customer
 import com.magicbluepenguin.testapp.data.DataFetchError
+import com.magicbluepenguin.testapp.data.customer.Customer
 import com.magicbluepenguin.testapp.databinding.ActivityCustomerListBinding
 import com.magicbluepenguin.testapp.databinding.CustomerListItemBinding
 import kotlinx.android.synthetic.main.activity_customer_list.toolbar

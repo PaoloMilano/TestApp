@@ -1,12 +1,11 @@
-package com.magicbluepenguin.testapp
+package com.magicbluepenguin.testapp.customerlistactivity
 
 import androidx.databinding.Observable
-import com.magicbluepenguin.testapp.customer.Customer
-import com.magicbluepenguin.testapp.customerlistactivity.CustomersViewModel
 import com.magicbluepenguin.testapp.customerrepository.CsvCustomerRepository
 import com.magicbluepenguin.testapp.data.DataFetchError
 import com.magicbluepenguin.testapp.data.ResponseNoValue
 import com.magicbluepenguin.testapp.data.ResponseWithValue
+import com.magicbluepenguin.testapp.data.customer.Customer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

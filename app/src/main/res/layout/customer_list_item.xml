@@ -9,7 +9,7 @@
 
         <variable
             name="customer"
-            type="com.magicbluepenguin.testapp.customer.Customer" />
+            type="com.magicbluepenguin.testapp.data.customer.Customer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

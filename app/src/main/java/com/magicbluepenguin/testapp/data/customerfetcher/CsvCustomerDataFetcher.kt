@@ -1,7 +1,11 @@
-package com.magicbluepenguin.testapp.data
+package com.magicbluepenguin.testapp.data.customerfetcher
 
 import android.content.res.AssetManager
-import com.magicbluepenguin.testapp.customer.Customer
+import com.magicbluepenguin.testapp.data.DataFetchError
+import com.magicbluepenguin.testapp.data.DataResponse
+import com.magicbluepenguin.testapp.data.ResponseNoValue
+import com.magicbluepenguin.testapp.data.ResponseWithValue
+import com.magicbluepenguin.testapp.data.customer.Customer
 import com.opencsv.CSVReaderHeaderAware
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -13,7 +17,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager) : CustomerDataFetcher<String> {
+class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager) :
+    CustomerDataFetcher<String> {
 
     private val FIST_NAME_KEY = "First name"
     private val SUR_NAME_KEY = "Sur name"
@@ -26,7 +31,10 @@ class CsvCustomerDataFetcher @Inject constructor(val assetManager: AssetManager)
     @Suppress("UNCHECKED_CAST")
     override fun fetchAndParseCustomers(fromSource: String?): DataResponse<List<Customer>> {
         if (fromSource == null) {
-            return ResponseWithValue(emptyList(), DataFetchError.NONE)
+            return ResponseWithValue(
+                emptyList(),
+                DataFetchError.NONE
+            )
         }
 
         return try {

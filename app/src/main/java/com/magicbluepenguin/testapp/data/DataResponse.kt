@@ -15,4 +15,10 @@ sealed class DataResponse<T>(val error: DataFetchError)
 
 class ResponseNoValue<T>() : DataResponse<T>(DataFetchError.ALL)
 
-class ResponseWithValue<T>(val data: T, error: DataFetchError) : DataResponse<T>(error)
+class ResponseWithValue<T>(val data: T, error: DataFetchError) : DataResponse<T>(error) {
+    init {
+        if (error == DataFetchError.ALL) {
+            throw IllegalArgumentException("Cannot return a value from a response with an error of type ALL")
+        }
+    }
+}

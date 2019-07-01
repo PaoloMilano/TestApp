@@ -1,8 +1,8 @@
 package com.magicbluepenguin.testapp.dagger
 
 import android.content.res.AssetManager
-import com.magicbluepenguin.testapp.data.CsvCustomerDataFetcher
-import com.magicbluepenguin.testapp.data.CustomerDataFetcher
+import com.magicbluepenguin.testapp.data.customerfetcher.CsvCustomerDataFetcher
+import com.magicbluepenguin.testapp.data.customerfetcher.CustomerDataFetcher
 import dagger.Binds
 import dagger.Module
 
