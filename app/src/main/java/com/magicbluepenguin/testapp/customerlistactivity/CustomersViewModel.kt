@@ -27,7 +27,7 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
     val dataFetchError = ObservableField<DataFetchError>()
     val noResourcesProvided = ObservableBoolean()
 
-    private var previousResource: String? = null
+    private var currentResource: String? = null
     private var currentFetchingJob: Job? = null
 
     private val job = Job()
@@ -39,7 +39,7 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
         dataFetchError.set(DataFetchError.NONE)
     }
 
-    fun fetchAndUpdateResults(fromSource: String? = previousResource): Job? {
+    fun fetchAndUpdateResults(fromSource: String? = currentResource): Job? {
         currentFetchingJob?.cancel()
         currentFetchingJob = launch(Dispatchers.Default) {
             isLoading.set(true)
@@ -47,7 +47,7 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
                 noResourcesProvided.set(true)
                 isLoading.set(false)
             } else {
-                previousResource = fromSource
+                currentResource = fromSource
                 customerRepository.getCustomersResponse(fromSource).also {
                     customersLiveList.set(handleCustomersResponseAndGetData(it))
                 }
