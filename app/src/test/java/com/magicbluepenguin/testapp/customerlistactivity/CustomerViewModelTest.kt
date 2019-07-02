@@ -9,13 +9,37 @@ import com.magicbluepenguin.testapp.data.customer.Customer
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class CustomerViewModelTest {
 
     private val emptySuccessResponse = ResponseWithValue<List<Customer>>(emptyList(), DataFetchError.NONE)
+
+    @Test
+    fun `assert that a fetching job is cancelled before a new one is started`() {
+        val mockRepository = mockk<CsvCustomerRepository>()
+        every { mockRepository.getCustomersResponse(any()) } answers {
+            // Make sure this job cannot complete on its own before the test is done
+            runBlocking { delay(10000) }
+            emptySuccessResponse
+        }
+
+        val customersViewModel = CustomersViewModel(mockRepository)
+        val job1 = customersViewModel.fetchAndUpdateResults("")
+        assertTrue(job1!!.isActive)
+        val job2 = customersViewModel.fetchAndUpdateResults("")
+        assertTrue(job2!!.isActive)
+        assertTrue(job1.isCancelled)
+
+        // Make sure you cancel the running job afterwards
+        assertFalse(job2.isCompleted)
+        job2.cancel()
+    }
 
     @Test
     fun `assert that customer list observable is updated correctly`() {
@@ -37,7 +61,7 @@ class CustomerViewModelTest {
 
         runBlocking {
             // Pass an empty string as a fake resource name
-            customersViewModel.fetchAndUpdateResults("").join()
+            customersViewModel.fetchAndUpdateResults("")?.join()
         }
         assertEquals(testListOfCustomers, customersViewModel.customersLiveList.get())
     }
@@ -60,7 +84,7 @@ class CustomerViewModelTest {
         })
         runBlocking {
             // Pass an empty string as a fake resource name
-            customersViewModel.fetchAndUpdateResults("").join()
+            customersViewModel.fetchAndUpdateResults("")?.join()
         }
         assertEquals(listOf(false), actualCalls)
     }
@@ -76,7 +100,7 @@ class CustomerViewModelTest {
             }
         })
         runBlocking {
-            customersViewModel.fetchAndUpdateResults().join()
+            customersViewModel.fetchAndUpdateResults()?.join()
         }
         assertEquals(listOf(true, false), actualCalls)
     }
@@ -97,7 +121,7 @@ class CustomerViewModelTest {
         })
         runBlocking {
             // Pass an empty string as a fake resource name
-            customersViewModel.fetchAndUpdateResults("").join()
+            customersViewModel.fetchAndUpdateResults("")?.join()
         }
         assertEquals(listOf(true, false), actualCalls)
     }
@@ -112,7 +136,7 @@ class CustomerViewModelTest {
             }
         })
         runBlocking {
-            customersViewModel.fetchAndUpdateResults().join()
+            customersViewModel.fetchAndUpdateResults()?.join()
         }
         assertEquals(listOf(true, false), actualCalls)
     }
@@ -127,7 +151,7 @@ class CustomerViewModelTest {
         val customersViewModel = CustomersViewModel(mockRepository)
 
         runBlocking {
-            customersViewModel.fetchAndUpdateResults(resourceName).join()
+            customersViewModel.fetchAndUpdateResults(resourceName)?.join()
             customersViewModel.refreshResults().join()
         }
         verify(exactly = 2) {
@@ -161,7 +185,7 @@ class CustomerViewModelTest {
 
         runBlocking {
             // Pass an empty string as a fake resource name
-            customersViewModel.fetchAndUpdateResults("").join()
+            customersViewModel.fetchAndUpdateResults("")?.join()
         }
         assertEquals(listOf(DataFetchError.SOME, DataFetchError.NONE), actualCalls)
     }
@@ -181,7 +205,7 @@ class CustomerViewModelTest {
 
         runBlocking {
             // Pass an empty string as a fake resource name
-            customersViewModel.fetchAndUpdateResults("").join()
+            customersViewModel.fetchAndUpdateResults("")?.join()
         }
         assertEquals(listOf(DataFetchError.ALL, DataFetchError.NONE), actualCalls)
     }
