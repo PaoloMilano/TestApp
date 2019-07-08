@@ -152,7 +152,7 @@ class CustomerViewModelTest {
 
         runBlocking {
             customersViewModel.fetchAndUpdateResults(resourceName)?.join()
-            customersViewModel.refreshResults().join()
+            customersViewModel.refreshResults()?.join()
         }
         verify(exactly = 2) {
             mockRepository.getCustomersResponse(resourceName)

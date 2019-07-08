@@ -3,21 +3,19 @@ package com.magicbluepenguin.testapp.customerlistactivity
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.magicbluepenguin.testapp.customerrepository.CustomerRepository
 import com.magicbluepenguin.testapp.data.DataFetchError
 import com.magicbluepenguin.testapp.data.DataResponse
 import com.magicbluepenguin.testapp.data.ResponseNoValue
 import com.magicbluepenguin.testapp.data.ResponseWithValue
 import com.magicbluepenguin.testapp.data.customer.Customer
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
-class CustomersViewModel @Inject constructor(val customerRepository: CustomerRepository<String>) : ViewModel(),
-    CoroutineScope {
+class CustomersViewModel @Inject constructor(val customerRepository: CustomerRepository<String>) : ViewModel() {
 
     val customersLiveList = ObservableField<List<Customer>>()
     val isLoading = ObservableBoolean()
@@ -30,18 +28,13 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
     private var currentResource: String? = null
     private var currentFetchingJob: Job? = null
 
-    private val job = Job()
-
-    override val coroutineContext: CoroutineContext
-        get() = job + Dispatchers.Main
-
     init {
         dataFetchError.set(DataFetchError.NONE)
     }
 
     fun fetchAndUpdateResults(fromSource: String? = currentResource): Job? {
         currentFetchingJob?.cancel()
-        currentFetchingJob = launch(Dispatchers.Default) {
+        currentFetchingJob = viewModelScope.launch(Dispatchers.Default) {
             isLoading.set(true)
             if (fromSource == null) {
                 noResourcesProvided.set(true)
@@ -71,7 +64,5 @@ class CustomersViewModel @Inject constructor(val customerRepository: CustomerRep
         }
     }
 
-    fun refreshResults() = launch(Dispatchers.Default) {
-        fetchAndUpdateResults()
-    }
+    fun refreshResults() = fetchAndUpdateResults()
 }
